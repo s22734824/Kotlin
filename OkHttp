@@ -1,0 +1,51 @@
+package com.example.myapplication
+
+import org.junit.Test
+
+import org.junit.Assert.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
+/**
+ * Example local unit test, which will execute on the development machine (host).
+ *
+ * See [testing documentation](http://d.android.com/tools/testing).
+ */
+data class TW(val date: String, val week: String,val isHoliday:String,val description:String)
+{
+    override fun toString(): String {
+        return "date(date=$date, week=$week , isHoliday$isHoliday ,description$description )"
+    }
+}
+
+class ExampleUnitTest {
+    @Test
+    fun addition_isCorrect() {
+        val client = OkHttpClient()
+        val request = Request.Builder()
+            .url("https://cdn.jsdelivr.net/gh/ruyut/TaiwanCalendar/data/2023.json")
+            .build()
+        val startTime = System.currentTimeMillis()
+        val response = client.newCall(request).execute()
+        val endTime = System.currentTimeMillis()
+        val elapsedTime = endTime - startTime
+        println("程式執行時間：$elapsedTime 毫秒")
+        if (response.isSuccessful) {
+            val gson = Gson()
+            val responseBody = response.body?.string()
+            val listType  = object: TypeToken<List<TW>>(){}.type
+            val TWList: List<TW> = gson.fromJson(responseBody, listType)
+            for(TW in TWList)
+            {
+                println(TW.toString())
+            }
+        } else {
+            println("API request failed with response code ${response.code}")
+        }
+    }
+
+
+
+}
